@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using System.Diagnostics;
+using System.Linq;
+using System.Net;
 
 namespace StarCraft2Autosplitter
 {
@@ -7,30 +9,25 @@ namespace StarCraft2Autosplitter
         private static WebClient wc = new WebClient();
         private static string base_url = "http://127.0.0.1:6119/";
 
+        public static bool IsSc2Running()
+        {
+            return Process.GetProcesses().Where(p =>
+            {
+                var lp = p.ProcessName.ToLower();
+                return lp == "sc2_x64" || lp == "sc2";
+            }).Any();
+        }
+
         public static bool HasGameStarted()
         {
-            try
-            {
-                string ui = wc.DownloadString($"{base_url}ui/");
-                if (ui.Contains("ScreenLoading"))
-                    return false;
-
-                string game = wc.DownloadString($"{base_url}game/");
-                if (!game.Contains("\"type\":\"computer\""))
-                    return false;
-
-                if (game.Contains("displayTime"))
-                    return float.Parse(game.TrimBetween("displayTime\":", ",")) > 0;
-            }
-            catch
-            {
-            }
-
-            return false;
+            return (GameTime() ?? 0) > 0;
         }
 
         public static int? GameTime()
         {
+            if (!IsSc2Running())
+                return null;
+
             try
             {
                 string ui = wc.DownloadString($"{base_url}ui/");
