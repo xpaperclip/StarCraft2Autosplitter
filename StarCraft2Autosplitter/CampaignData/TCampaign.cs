@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace StarCraft2Autosplitter.Sc2Campaign
+namespace StarCraft2Autosplitter
 {
     public class TCampaign : ICampaign
     {

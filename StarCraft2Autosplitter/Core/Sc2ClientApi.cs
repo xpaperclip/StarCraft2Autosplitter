@@ -4,7 +4,7 @@ using System.Net;
 
 namespace StarCraft2Autosplitter
 {
-    public class Sc2ClientApi
+    public static class Sc2ClientApi
     {
         private static WebClient wc = new WebClient();
         private static string base_url = "http://127.0.0.1:6119/";

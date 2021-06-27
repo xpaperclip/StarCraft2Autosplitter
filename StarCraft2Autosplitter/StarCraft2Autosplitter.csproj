@@ -49,12 +49,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutosplitterComponentFactory.cs" />
-    <Compile Include="BankMonitor.cs" />
-    <Compile Include="BankReader.cs" />
-    <Compile Include="ExtensionMethods.cs" />
-    <Compile Include="Sc2Campaign\Campaigns.cs" />
-    <Compile Include="Sc2Campaign\TCampaign.cs" />
-    <Compile Include="Sc2ClientApi.cs" />
+    <Compile Include="BankFileWatcher.cs" />
+    <Compile Include="Core\BankReader.cs" />
+    <Compile Include="Core\MissionTime.cs" />
+    <Compile Include="Utils\ExtensionMethods.cs" />
+    <Compile Include="CampaignData\Campaigns.cs" />
+    <Compile Include="CampaignData\ZCampaign.cs" />
+    <Compile Include="CampaignData\TCampaign.cs" />
+    <Compile Include="Core\Sc2ClientApi.cs" />
     <Compile Include="SettingsForm.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -63,7 +65,7 @@
     </Compile>
     <Compile Include="AutosplitterComponent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StringUtils.cs" />
+    <Compile Include="Utils\StringUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="SettingsForm.resx">
