@@ -15,19 +15,14 @@ namespace StarCraft2Autosplitter
         public AutosplitterComponent(LiveSplitState state)
         {
             this.state = state;
-            state.IsGameTimeInitialized = true;
 
             settingsForm = new SettingsForm();
+            settingsForm.Component = this;
 
             timer = new TimerModel();
             timer.CurrentState = state;
 
             watcher = new BankFileWatcher(this);
-
-            // default settings
-            TimesFilename = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-                "times.txt");
         }
 
         public override void Dispose()
@@ -62,18 +57,66 @@ namespace StarCraft2Autosplitter
         public override void SetSettings(XmlNode node)
         {
             var element = (XmlElement)node;
-            //UseSegmentTimes = SettingsHelper.ParseBool(element["AutoSplit"]);
+            IgtUpdate = SettingsHelper.ParseBool(element["IgtUpdate"], true);
+            WriteIgtFile = SettingsHelper.ParseBool(element["WriteIgtFile"], true);
+            IgtFile = SettingsHelper.ParseString(element["IgtFile"], Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                "StarCraft II Speedrun Times.txt"));
         }
 
         private int CreateSettingsNode(XmlDocument document, XmlElement parent)
         {
-            return SettingsHelper.CreateSetting(document, parent, "Version", "1.0");
-            //^ SettingsHelper.CreateSetting(document, parent, "AutoSplit", AutoSplit);
+            return SettingsHelper.CreateSetting(document, parent, "Version", "1.0")
+                ^ SettingsHelper.CreateSetting(document, parent, "IgtUpdate", IgtUpdate)
+                ^ SettingsHelper.CreateSetting(document, parent, "WriteIgtFile", WriteIgtFile)
+                ^ SettingsHelper.CreateSetting(document, parent, "IgtFile", IgtFile);
+        }
+
+
+        private bool _igtUpdate = true;
+        public bool IgtUpdate
+        {
+            get { return _igtUpdate; }
+            set
+            {
+                if (_igtUpdate != value)
+                {
+                    _igtUpdate = value;
+                    settingsForm.Update_IgtUpdate(value);
+                    state.IsGameTimeInitialized = value;
+                }
+            }
+        }
+
+        private bool _writeIgtFile = true;
+        public bool WriteIgtFile
+        {
+            get { return _writeIgtFile; }
+            set
+            {
+                if (_writeIgtFile != value)
+                {
+                    _writeIgtFile = value;
+                    settingsForm.Update_WriteIgtFile(value);
+                }
+            }
+        }
+
+        private string _igtFile;
+        public string IgtFile
+        {
+            get { return _igtFile; }
+            set
+            {
+                if (_igtFile != value)
+                {
+                    _igtFile = value;
+                    settingsForm.Update_IgtFile(value);
+                }
+            }
         }
 
         #endregion
-
-        public string TimesFilename { get; set; }
 
         private int timeTakenSoFar = 0;
         private int missionsDoneLast = 0;
@@ -90,6 +133,7 @@ namespace StarCraft2Autosplitter
 
         public void UpdateState(string filename, ICampaign campaign)
         {
+            settingsForm.SetCampaign(campaign);
             settingsForm.SetBankPath(filename);
 
             var missions = BankReader.Read(filename, campaign);
@@ -107,12 +151,15 @@ namespace StarCraft2Autosplitter
             missionsDoneLast = count;
 
             // write mission times to file if requested
-            if (!string.IsNullOrWhiteSpace(TimesFilename))
-                MissionTimesWriter.WriteMissionTimes(TimesFilename, missions, campaign);
+            if (WriteIgtFile && !string.IsNullOrWhiteSpace(IgtFile))
+                MissionTimesWriter.WriteMissionTimes(IgtFile, missions, campaign);
         }
 
         public override void Update(IInvalidator invalidator, LiveSplitState state, float width, float height, LayoutMode mode)
         {
+            if (!IgtUpdate)
+                return;
+
             var time = Sc2ClientApi.GameTime();
             var loading = !time.HasValue;
             state.IsGameTimePaused = loading;

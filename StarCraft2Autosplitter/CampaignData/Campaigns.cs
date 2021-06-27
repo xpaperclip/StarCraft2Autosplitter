@@ -27,6 +27,8 @@ namespace StarCraft2Autosplitter
 
     public interface ICampaign
     {
+        string Name { get; }
+
         string BankFilename { get; }
         string MissionCompletedAge { get; }
         string MissionBestTime { get; }

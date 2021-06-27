@@ -11,6 +11,8 @@ namespace StarCraft2Autosplitter
 
         private readonly Dictionary<string, string> _missions;
 
+        public string Name => "Heart of the Swarm";
+
         public string BankFilename => "ZCampaign.SC2Bank";
         public string MissionCompletedAge => "ZCampaign|MissionCompletedAge";
         public string MissionBestTime => "ZCampaign|MissionBestTime";

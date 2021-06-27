@@ -11,6 +11,8 @@ namespace StarCraft2Autosplitter
 
         private readonly Dictionary<string, string> _missions;
 
+        public string Name => "Wings of Liberty";
+
         public string BankFilename => "TCampaign.SC2Bank";
         public string MissionCompletedAge => "MissionCompletedAge";
         public string MissionBestTime => "MissionBestTime";
